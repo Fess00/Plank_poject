@@ -8,6 +8,7 @@ from matplotlib import pyplot as plt
 from tabulate import tabulate as tbl
 
 class LinAprox:
+    n = 100
     # coef
     __alpha = 1
     __beta = 1
@@ -33,8 +34,11 @@ class LinAprox:
     __B = -70
 
     # set and targets
-    __targets = []
-    __set = []
+    __targets = np.zeros(n)
+    __xParams = np.zeros(n)
+    __setParams = np.zeros((100, 6), float)
+    __setAB = np.zeros((100, 2))
+    __set = np.zeros((100, 4))
 
     def __init__(self, alpha, beta, gamma, delta, C0, sigma1, sigma2):
         self.__alpha = alpha
@@ -73,11 +77,11 @@ class LinAprox:
         self.t = t
         return A + B*np.cos(2*np.pi*t)
     
-    def __As(self):
-        self.__A = (self.__alpha*self.__sigma1 - self.__delta*self.__C - self.__gamma*self.__sigma2) / 2*self.__delta
+    def __As(self, alpha, gamma, delta, sigma1, sigma2):
+        return (alpha*sigma1 - delta*self.__C - gamma*sigma2) / 2*delta
     
-    def __Bs(self):
-        self.__B = self.__gamma*self.__sigma2 / (6*self.__beta*np.power(np.pi, 2) + 2*self.__delta)
+    def __Bs(self, beta, gamma, delta, sigma2):
+        return gamma*sigma2 / (6*beta*np.power(np.pi, 2) + 2*delta)
 
     def J(self, X, S, Ss, E, G):
         A = self.__A
@@ -98,21 +102,40 @@ class LinAprox:
         self.__sigma1 = sigma1
         self._sigma2 = sigma2
     
-    def FindAndPut(self):
-        pass
+    def MakeParamSet(self):
+        a = 0.1
+        b = 1000.0
+        for i in range(0, 100):
+            alpha = random.uniform(a, b)
+            beta = random.uniform(a, b)
+            gamma = random.uniform(a, b)
+            delta = random.uniform(a, b)
+            sigma1 = random.uniform(a, b)
+            sigma2 = random.uniform(a, b)
+            self.ReSet(alpha, beta, gamma, delta, self.__C0, sigma1, sigma2)
+            self.__setParams[i][0] = alpha
+            self.__setParams[i][1] = beta
+            self.__setParams[i][2] = gamma
+            self.__setParams[i][3] = delta
+            self.__setParams[i][4] = sigma1
+            self.__setParams[i][5] = sigma2
+        return self.__setParams
+    
+    def MakeABSet(self):
+        for i in range(0, 100):
+            a = self.__As(self.__setParams[i][0], self.__setParams[i][2], self.__setParams[i][3], self.__setParams[i][4], self.__setParams[i][5])
+            b = self.__Bs(self.__setParams[i][1], self.__setParams[i][2], self.__setParams[i][3], self.__setParams[i][5])
+            self.__setAB[i][0] = a
+            self.__setAB[i][1] = b
+        return self.__setAB
 
 # Entry point
 
 if __name__ == "__main__":
     j = LinAprox(0, 0, 0, 0, 0, 0, 0)
-    alpha = random.random(0, 1000)
-    beta = random.random(0, 1000)
-    gamma = random.random(0, 1000)
-    delta = random.random(0, 1000)
-    С0 = random.randint(20, 100)
-    sigma1 = random.random(0, 10)
-    sigma2 = random.random(0, 10)
-    j.ReSet(alpha, beta, gamma, delta, С0, sigma1, sigma2)
+    print(j.MakeParamSet())
+    print(j.MakeABSet())
+    print(500*100 / (6*10*np.power(np.pi, 2) + 2*10))
 
     # print(j.GetA())
     # print(j.GetB())
