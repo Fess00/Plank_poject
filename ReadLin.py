@@ -1,6 +1,8 @@
+from ctypes.wintypes import DOUBLE
 from wsgiref import headers
 import numpy as np
 import random
+from pandas import DataFrame
 from scipy import integrate
 from prettytable import PrettyTable
 from scipy.optimize import minimize
@@ -9,6 +11,7 @@ from tabulate import tabulate as tbl
 
 class LinAprox:
     n = 100
+    random.seed(2)
     # coef
     __alpha = 1
     __beta = 1
@@ -36,7 +39,7 @@ class LinAprox:
     # set and targets
     __targets = np.zeros(n)
     __xParams = np.zeros(n)
-    __setParams = np.zeros((100, 6), float)
+    __setParams = np.zeros((100, 6))
     __setAB = np.zeros((100, 2))
     __set = np.zeros((100, 4))
 
@@ -103,15 +106,15 @@ class LinAprox:
         self._sigma2 = sigma2
     
     def MakeParamSet(self):
-        a = 0.1
-        b = 1000.0
+        a = 0.001
+        b = 1.0
         for i in range(0, 100):
-            alpha = random.uniform(a, b)
-            beta = random.uniform(a, b)
-            gamma = random.uniform(a, b)
-            delta = random.uniform(a, b)
-            sigma1 = random.uniform(a, b)
-            sigma2 = random.uniform(a, b)
+            alpha = round(random.uniform(a, b), 2)
+            beta = round(random.uniform(a, b), 2)
+            gamma = round(random.uniform(a, b), 2)
+            delta = round(random.uniform(a, b), 2)
+            sigma1 = round(random.uniform(a, b), 2)
+            sigma2 = round(random.uniform(a, b), 2)
             self.ReSet(alpha, beta, gamma, delta, self.__C0, sigma1, sigma2)
             self.__setParams[i][0] = alpha
             self.__setParams[i][1] = beta
@@ -127,6 +130,7 @@ class LinAprox:
             b = self.__Bs(self.__setParams[i][1], self.__setParams[i][2], self.__setParams[i][3], self.__setParams[i][5])
             self.__setAB[i][0] = a
             self.__setAB[i][1] = b
+            g = DataFrame(data=self.__setAB)
         return self.__setAB
 
 # Entry point
@@ -135,7 +139,12 @@ if __name__ == "__main__":
     j = LinAprox(0, 0, 0, 0, 0, 0, 0)
     print(j.MakeParamSet())
     print(j.MakeABSet())
-    print(500*100 / (6*10*np.power(np.pi, 2) + 2*10))
+    # gamma*sigma2 / (6*beta*np.power(np.pi, 2) + 2*delta)
+    print(10*1 / (6*0.001*np.power(np.pi, 2) + 2*0.001))
+    # (alpha*sigma1 - delta*self.__C - gamma*sigma2) / 2*delta
+    a = (10*1 - 10*100 - 1000*1) / 2*10
+    print(a) 
+    print(10 - 10*2*(a + 50) / 4*np.power(np.pi, 2)*0.001+10)
 
     # print(j.GetA())
     # print(j.GetB())
