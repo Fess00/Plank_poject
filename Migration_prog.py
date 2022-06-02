@@ -135,27 +135,29 @@ class Ui_Migration(object):
         self.progressBar.setValue(0)
 
         self.rt = RT.GipAprox(94.1, 16.4, 25.6, 0.3, 26, 2.7, 3, 0.25)
-        self.base_input_data_rt = self.rt.GenSet(self.dataset_size)
+        self.base_input_data_rt = self.rl.MakeParamSet()
         self.input_data_rt = self.rt.GenNetSet(self.dataset_size)
         self.output_data_rt = self.rt.GetTargets()
 
         self.progressBar.setValue(20)
 
-        self.rl = RL.LinAprox(798, 3.6, 427, 0.291, 100)
-        self.base_input_data_rl = self.rl.GenSet(self.dataset_size)
-        self.input_data_rl = self.rl.GenNetSet(self.dataset_size)
+        self.rl = RL.LinAprox()
+        self.base_input_data_rl = self.rl.MakeParamSet()
+        self.input_data_rl = self.rl.MakeMSet()
         self.output_data_rl = self.rl.GetTargets()
 
         labelsBase = []
-        labelsBase.append('C')
-        labelsBase.append('C0')
-        labelsBase.append('A')
-        labelsBase.append('B')
+        labelsBase.append('alpha')
+        labelsBase.append('beta')
+        labelsBase.append('gamma')
+        labelsBase.append('delta')
+        labelsBase.append('sigma1')
+        labelsBase.append('sigma2')
         labelsNet = []
-        labelsNet.append('E')
-        labelsNet.append('Sx')
-        labelsNet.append('St')
-        labelsNet.append('G')
+        labelsNet.append('M1')
+        labelsNet.append('M1')
+        labelsNet.append('SM1')
+        labelsNet.append('M1')
         labelsNet.append('Target')
 
         self.BaseSetLin.setHorizontalHeaderLabels(labelsBase)
@@ -322,10 +324,10 @@ class Ui_Migration(object):
         self.pushButton.setText(_translate("Migration", "Сгенерировать выборки"))
         self.pushButton_2.setText(_translate("Migration", "Обучить нейронную сеть"))
         self.pushButton_3.setText(_translate("Migration", "Протестировать нейронную сеть"))
-        self.label.setText(_translate("Migration", "Исходная выборка для Л-К аппроксимации"))
-        self.label_2.setText(_translate("Migration", "Исходная выборка для гиперб. аппроксимации"))
-        self.label_3.setText(_translate("Migration", "Адпатированная Л-К выборка под нейронную сеть"))
-        self.label_4.setText(_translate("Migration", "Адпатированная гиперб. выборка под нейронную сеть"))
+        self.label.setText(_translate("Migration", "Данные для Л-К аппроксимации"))
+        self.label_2.setText(_translate("Migration", "Данные для гиперб. аппроксимации"))
+        self.label_3.setText(_translate("Migration", "Л-К выборка"))
+        self.label_4.setText(_translate("Migration", "Гиперб. выборка"))
 
 if __name__ == "__main__":
     import sys
