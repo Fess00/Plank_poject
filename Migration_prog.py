@@ -5,8 +5,8 @@ from sklearn import metrics
 from sklearn.model_selection import learning_curve
 from sklearn.neural_network import MLPClassifier
 from sklearn.feature_selection import SelectKBest
-import ReadLin as RL
-import ReadTan as RT
+import lineynaya_aproximatsia as RL
+import giperbolicheskaya_aproximatsia as RT
 from matplotlib import pyplot as plt
 
 
@@ -34,23 +34,23 @@ class Ui_Migration(object):
         font.setPointSize(14)
         self.pushButton_3.setFont(font)
         self.pushButton_3.setObjectName("pushButton_3")
-        self.BaseSetLin = QtWidgets.QTableWidget(self.centralwidget)
-        self.BaseSetLin.setGeometry(QtCore.QRect(10, 50, 491, 231))
-        self.BaseSetLin.setObjectName("BaseSetLin")
-        self.BaseSetLin.setColumnCount(4)
-        self.BaseSetLin.setRowCount(10000)
-        self.BaseSetHyp = QtWidgets.QTableWidget(self.centralwidget)
-        self.BaseSetHyp.setGeometry(QtCore.QRect(540, 50, 491, 231))
-        self.BaseSetHyp.setObjectName("BaseSetHyp")
-        self.BaseSetHyp.setColumnCount(4)
-        self.BaseSetHyp.setRowCount(10000)
+        # self.BaseSetLin = QtWidgets.QTableWidget(self.centralwidget)
+        # self.BaseSetLin.setGeometry(QtCore.QRect(10, 50, 491, 231))
+        # self.BaseSetLin.setObjectName("BaseSetLin")
+        # self.BaseSetLin.setColumnCount(4)
+        # self.BaseSetLin.setRowCount(10000)
+        # self.BaseSetHyp = QtWidgets.QTableWidget(self.centralwidget)
+        # self.BaseSetHyp.setGeometry(QtCore.QRect(540, 50, 491, 231))
+        # self.BaseSetHyp.setObjectName("BaseSetHyp")
+        # self.BaseSetHyp.setColumnCount(4)
+        # self.BaseSetHyp.setRowCount(10000)
         self.NetSetLin = QtWidgets.QTableWidget(self.centralwidget)
-        self.NetSetLin.setGeometry(QtCore.QRect(10, 320, 491, 231))
+        self.NetSetLin.setGeometry(QtCore.QRect(10, 50, 491, 231))
         self.NetSetLin.setObjectName("NetSetLin")
         self.NetSetLin.setColumnCount(5)
         self.NetSetLin.setRowCount(10000)
         self.NetSeHyp = QtWidgets.QTableWidget(self.centralwidget)
-        self.NetSeHyp.setGeometry(QtCore.QRect(540, 320, 491, 231))
+        self.NetSeHyp.setGeometry(QtCore.QRect(540, 50, 491, 231))
         self.NetSeHyp.setObjectName("NetSeHyp")
         self.NetSeHyp.setColumnCount(5)
         self.NetSeHyp.setRowCount(10000)
@@ -134,17 +134,17 @@ class Ui_Migration(object):
         self.progressBar.show()
         self.progressBar.setValue(0)
 
-        self.rt = RT.GipAprox(94.1, 16.4, 25.6, 0.3, 26, 2.7, 3, 0.25)
-        self.base_input_data_rt = self.rl.MakeParamSet()
-        self.input_data_rt = self.rt.GenNetSet(self.dataset_size)
-        self.output_data_rt = self.rt.GetTargets()
+        # MakeXSetI()
+
+        r = RT.GipAprox()
+
+        self.rt, self.input_data_rt, self.output_data_rt = r.MakeXSetI()
 
         self.progressBar.setValue(20)
 
-        self.rl = RL.LinAprox()
-        self.base_input_data_rl = self.rl.MakeParamSet()
-        self.input_data_rl = self.rl.MakeMSet()
-        self.output_data_rl = self.rl.GetTargets()
+        l = RL.LinAprox()
+
+        self.rl, self.input_data_rl, self.output_data_rl = l.MakeXSetI()
 
         labelsBase = []
         labelsBase.append('alpha')
@@ -154,20 +154,18 @@ class Ui_Migration(object):
         labelsBase.append('sigma1')
         labelsBase.append('sigma2')
         labelsNet = []
-        labelsNet.append('M1')
-        labelsNet.append('M1')
-        labelsNet.append('SM1')
-        labelsNet.append('M1')
+        labelsNet.append('alpha')
+        labelsNet.append('beta')
+        labelsNet.append('gamma')
+        labelsNet.append('delta')
         labelsNet.append('Target')
 
-        self.BaseSetLin.setHorizontalHeaderLabels(labelsBase)
-        self.BaseSetHyp.setHorizontalHeaderLabels(labelsBase)
         self.NetSetLin.setHorizontalHeaderLabels(labelsNet)
         self.NetSeHyp.setHorizontalHeaderLabels(labelsNet)
 
         self.progressBar.setValue(40)
 
-        for i in range(self.dataset_size):
+        for i in range(10):
             for j in range(5):
                 if j == 4:
                     self.NetSetLin.setItem(i, j, QtWidgets.QTableWidgetItem(str(self.output_data_rl[i])))
@@ -175,13 +173,6 @@ class Ui_Migration(object):
                     break
                 self.NetSetLin.setItem(i, j, QtWidgets.QTableWidgetItem(str(self.input_data_rl[i][j])))
                 self.NetSeHyp.setItem(i, j, QtWidgets.QTableWidgetItem(str(self.input_data_rt[i][j])))
-        
-        self.progressBar.setValue(60)
-        
-        for i in range(self.dataset_size):
-            for j in range(4):
-                self.BaseSetLin.setItem(i, j, QtWidgets.QTableWidgetItem(str(self.base_input_data_rl[i][j])))
-                self.BaseSetHyp.setItem(i, j, QtWidgets.QTableWidgetItem(str(self.base_input_data_rt[i][j])))
 
         self.progressBar.setValue(80)
 
@@ -324,10 +315,10 @@ class Ui_Migration(object):
         self.pushButton.setText(_translate("Migration", "Сгенерировать выборки"))
         self.pushButton_2.setText(_translate("Migration", "Обучить нейронную сеть"))
         self.pushButton_3.setText(_translate("Migration", "Протестировать нейронную сеть"))
-        self.label.setText(_translate("Migration", "Данные для Л-К аппроксимации"))
-        self.label_2.setText(_translate("Migration", "Данные для гиперб. аппроксимации"))
-        self.label_3.setText(_translate("Migration", "Л-К выборка"))
-        self.label_4.setText(_translate("Migration", "Гиперб. выборка"))
+        self.label.setText(_translate("Migration", "Л-К выборка"))
+        self.label_2.setText(_translate("Migration", "Гиперб. выборка"))
+        self.label_3.setText(_translate("Migration", ""))
+        self.label_4.setText(_translate("Migration", ""))
 
 if __name__ == "__main__":
     import sys
